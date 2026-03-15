@@ -31,13 +31,16 @@ st.sidebar.caption(f"Attempts remaining: {attempt_limit - st.session_state.get('
 if "difficulty" not in st.session_state:
     st.session_state.difficulty = difficulty
 
-# Fix: reset secret and game state when difficulty changes
+# Fix: reset secret, attempts, score, history, and status when difficulty changes
 if st.session_state.difficulty != difficulty:
     st.session_state.difficulty = difficulty
     st.session_state.secret = random.randint(low, high)
     st.session_state.attempts = 0
+    st.session_state.score = 0
     st.session_state.status = "playing"
     st.session_state.history = []
+    st.session_state.last_hint = None
+    st.session_state.balloons_shown = False
 
 if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
@@ -54,10 +57,19 @@ if "status" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = []
 
+# Fix: track last hint in session state so it persists across reruns
+if "last_hint" not in st.session_state:
+    st.session_state.last_hint = None
+
+# Fix: track whether win balloons have already been shown so reruns don't re-trigger them
+if "balloons_shown" not in st.session_state:
+    st.session_state.balloons_shown = False
+
 st.subheader("Make a guess")
 
+# Fix: info bar now shows the actual difficulty range instead of hardcoded 1-100
 st.info(
-    f"Guess a number between 1 and 100. "
+    f"Guess a number between {low} and {high}. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
 )
 
@@ -75,46 +87,62 @@ raw_guess = st.text_input(
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    submit = st.button("Submit Guess 🚀")
+    # Fix: disable submit button once the game is won or lost
+    submit = st.button("Submit Guess 🚀", disabled=st.session_state.get("status") != "playing")
 with col2:
     new_game = st.button("New Game 🔁")
 with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
-# Fix Me: new game doesnt restart when button is clicked
-# Fix: new game secret now uses difficulty range instead of hardcoded 1-100
+# Fix: new game now resets attempts, secret, status, history, and score
 if new_game:
     st.session_state.attempts = 0
     st.session_state.secret = random.randint(low, high)
     st.session_state.status = "playing"
+    st.session_state.history = []
+    st.session_state.score = 0
+    st.session_state.last_hint = None
+    st.session_state.balloons_shown = False
     st.success("New game started.")
     st.rerun()
+# Fix: display hint from session state after rerun so it shows alongside updated history/score
+if st.session_state.last_hint and show_hint:
+    kind, msg = st.session_state.last_hint
+    if kind == "warning":
+        st.warning(msg)
+    else:
+        st.error(msg)
+
 if st.session_state.status != "playing":
     if st.session_state.status == "won":
-        st.success("You already won. Start a new game to play again.")
+        if not st.session_state.balloons_shown:
+            st.balloons()
+            st.session_state.balloons_shown = True
+        st.success(
+            f"🎉 You won! The secret was {st.session_state.secret}. "
+            f"Final score: {st.session_state.score}"
+        )
     else:
-        st.error("Game over. Start a new game to try again.")
+        st.error(
+            f"Out of attempts! The secret was {st.session_state.secret}. "
+            f"Score: {st.session_state.score}"
+        )
     st.stop()
 
 if submit:
     ok, guess_int, err = parse_guess(raw_guess, low, high)
 
     if not ok:
-        st.error(err)
+        st.session_state.last_hint = ("error", err)
+        st.rerun()
     else:
         # Fix: only count attempt when guess is valid so invalid inputs don't waste attempts
         st.session_state.attempts += 1
         st.session_state.history.append(guess_int)
 
-        if st.session_state.attempts % 2 == 0:
-            secret = str(st.session_state.secret)
-        else:
-            secret = st.session_state.secret
-
-        outcome, message = check_guess(guess_int, secret)
-
-        if show_hint:
-            st.warning(message)
+        # Fix: always compare secret as int — converting to str caused string comparison
+        # bugs where e.g. "4" > "22" evaluated True (alphabetical order), flipping the hint
+        outcome, message = check_guess(guess_int, st.session_state.secret)
 
         st.session_state.score = update_score(
             current_score=st.session_state.score,
@@ -123,20 +151,16 @@ if submit:
         )
 
         if outcome == "Win":
-            st.balloons()
             st.session_state.status = "won"
-            st.success(
-                f"You won! The secret was {st.session_state.secret}. "
-                f"Final score: {st.session_state.score}"
-            )
+            st.session_state.last_hint = None
+        elif st.session_state.attempts >= attempt_limit:
+            st.session_state.status = "lost"
+            st.session_state.last_hint = None
         else:
-            if st.session_state.attempts >= attempt_limit:
-                st.session_state.status = "lost"
-                st.error(
-                    f"Out of attempts! "
-                    f"The secret was {st.session_state.secret}. "
-                    f"Score: {st.session_state.score}"
-                )
+            # Fix: store hint in session state and rerun so debug panel shows updated history/score
+            st.session_state.last_hint = ("warning", message)
+
+        st.rerun()
 
 st.divider()
 st.caption("Built by an AI that claims this code is production-ready.")

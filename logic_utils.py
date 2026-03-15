@@ -64,21 +64,15 @@ def check_guess(guess, secret):
             return "Too High", "📉 Go LOWER!"
         return "Too Low", "📈 Go HIGHER!"
 
-#FIX: Refactored logic into logic_utils.py using Claude Code
+# Fix: scoring now makes sense — win awards points based on attempts used,
+# wrong guesses deduct equally regardless of direction, removed arbitrary even/odd parity bonus
 def update_score(current_score: int, outcome: str, attempt_number: int):
     """Update score based on outcome and attempt number."""
     if outcome == "Win":
-        points = 100 - 10 * (attempt_number + 1)
-        if points < 10:
-            points = 10
+        points = max(10, 100 - 10 * attempt_number)
         return current_score + points
 
-    if outcome == "Too High":
-        if attempt_number % 2 == 0:
-            return current_score + 5
-        return current_score - 5
-
-    if outcome == "Too Low":
+    if outcome in ("Too High", "Too Low"):
         return current_score - 5
 
     return current_score

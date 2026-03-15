@@ -52,6 +52,12 @@ Yes, Claude helped design most of the tests. For each bug I described, it wrote 
 - How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
 - What change did you make that finally gave the game a stable secret number?
 
+The secret number kept changing because every time the player clicked a button, Streamlit re-ran the entire Python script from the top. The line `st.session_state.secret = random.randint(low, high)` was outside any condition, so it generated a brand new secret on every single rerun — the game never remembered what number it had picked.
+
+I would explain Streamlit to a friend like this: imagine your entire program is a function that gets called again from scratch every time the user does anything — clicks a button, types in a box, anything. Session state is like a sticky note that survives between those calls, so you can write something on it once and it stays there even when the program reruns. Without session state, every variable resets to whatever the code says at the top.
+
+The fix was wrapping the secret generation in a `if "secret" not in st.session_state:` guard. That way the secret is only generated once on the very first load, and every rerun after that just reads the existing value from session state instead of rolling a new number.
+
 ---
 
 ## 5. Looking ahead: your developer habits
@@ -60,3 +66,9 @@ Yes, Claude helped design most of the tests. For each bug I described, it wrote 
   - This could be a testing habit, a prompting strategy, or a way you used Git.
 - What is one thing you would do differently next time you work with AI on a coding task?
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
+
+One habit I want to carry forward is writing a pytest specifically targeting the broken behavior before fixing it, so I can confirm the test fails first and then passes after the fix. That red-to-green pattern gave me real confidence that the bug was actually fixed and not just hidden.
+
+Next time I work with AI on a coding task I would describe the full acceptance criteria upfront — for example, stating "the New Game button must reset score, history, status, and attempts" rather than just "fix the New Game button." Being vague got me partial fixes that I had to loop back on multiple times.
+
+This project changed the way I think about AI-generated code because I used to assume that if the code ran without errors it was probably correct. Now I understand that the code can run perfectly and still have logic bugs, misleading behavior, and nonsense scoring rules — AI-generated code needs the same skeptical review as any other code.

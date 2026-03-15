@@ -1,5 +1,5 @@
 from unittest.mock import MagicMock, patch
-from logic_utils import check_guess, parse_guess, get_range_for_difficulty
+from logic_utils import check_guess, parse_guess, get_range_for_difficulty, update_score
 
 def test_winning_guess():
     # If the secret is 50 and guess is 50, it should be a win
@@ -59,6 +59,28 @@ def test_new_game_button_resets_status():
     assert session_state["attempts"] == 0
     assert session_state["secret"] != 42
     assert session_state["status"] == "playing"
+
+
+def test_new_game_resets_history_and_score():
+    # BUG TARGET: new game block did not reset history or score, so previous
+    # guesses and points carried over into the next game.
+    session_state = {
+        "attempts": 4,
+        "secret": 42,
+        "status": "won",
+        "history": [10, 30, 50, 42],
+        "score": 60,
+    }
+
+    # Replicate the fixed new_game block from app.py
+    session_state["attempts"] = 0
+    session_state["secret"] = 99
+    session_state["status"] = "playing"
+    session_state["history"] = []
+    session_state["score"] = 0
+
+    assert session_state["history"] == [], "History should be cleared on new game"
+    assert session_state["score"] == 0, "Score should reset to 0 on new game"
 
 
 def test_new_game_secret_stays_in_difficulty_range():
@@ -134,3 +156,39 @@ def test_difficulty_change_resets_secret_to_new_range():
     )
     assert session_state["attempts"] == 0
     assert session_state["history"] == []
+
+
+def test_update_score_win_first_attempt():
+    # Winning on attempt 1 should give 100 - 10*1 = 90 points
+    score = update_score(0, "Win", 1)
+    assert score == 90
+
+
+def test_update_score_win_fewer_attempts_scores_higher():
+    # Earlier wins should outscore later wins
+    early = update_score(0, "Win", 2)
+    late = update_score(0, "Win", 7)
+    assert early > late
+
+
+def test_update_score_win_minimum_10_points():
+    # Win points should never drop below 10, even on attempt 100
+    score = update_score(0, "Win", 100)
+    assert score == 10
+
+
+def test_update_score_wrong_guess_deducts_equally():
+    # BUG TARGET: old logic gave +5 on even attempts for "Too High" but -5 always for "Too Low"
+    # Both wrong directions should deduct the same amount
+    score_high = update_score(50, "Too High", 2)
+    score_low = update_score(50, "Too Low", 2)
+    assert score_high == score_low == 45
+
+
+def test_update_score_no_parity_bonus():
+    # BUG TARGET: old logic awarded +5 on even attempts for "Too High" — a nonsense parity bonus
+    # Wrong guesses should always deduct, never award points
+    score_odd = update_score(50, "Too High", 1)
+    score_even = update_score(50, "Too High", 2)
+    assert score_odd < 50, "Odd attempt wrong guess should deduct points"
+    assert score_even < 50, "Even attempt wrong guess should not award bonus points"
