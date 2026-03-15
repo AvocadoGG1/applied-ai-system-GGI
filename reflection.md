@@ -72,3 +72,5 @@ One habit I want to carry forward is writing a pytest specifically targeting the
 Next time I work with AI on a coding task I would describe the full acceptance criteria upfront — for example, stating "the New Game button must reset score, history, status, and attempts" rather than just "fix the New Game button." Being vague got me partial fixes that I had to loop back on multiple times.
 
 This project changed the way I think about AI-generated code because I used to assume that if the code ran without errors it was probably correct. Now I understand that the code can run perfectly and still have logic bugs, misleading behavior, and nonsense scoring rules — AI-generated code needs the same skeptical review as any other code.
+
+- For Commit
