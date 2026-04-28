@@ -136,7 +136,4 @@ The video does not need to show:
 - File setup.
 - Full code walkthrough.
 
-## Portfolio Artifact Links
 
-- GitHub: `PASTE_GITHUB_REPO_LINK_HERE`
-- Loom: `PASTE_LOOM_VIDEO_LINK_HERE`

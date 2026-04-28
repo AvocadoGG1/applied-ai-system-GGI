@@ -16,26 +16,26 @@ Glitch Museum Mode is integrated directly into the main Streamlit app. The user 
 
 ```mermaid
 flowchart TD
-    A[Human Player / Student] --> B[Select Artifact or Ask Question]
-    B --> C[Streamlit App: app.py]
-    C --> D[Artifact Query / Question Processor]
-    D --> E[RAG Retriever: rag_utils.py]
-    E --> F[Project Knowledge Base]
-    F --> G[README.md]
-    F --> H[reflection.md]
-    F --> I[app.py]
-    F --> J[logic_utils.py]
-    F --> K[tests/test_game_logic.py]
-    G --> L[Retrieved Evidence Snippets]
+    A["Human Player / Student"] --> B["Select Artifact or Ask Question"]
+    B --> C["Streamlit App: app.py"]
+    C --> D["Artifact Query / Question Processor"]
+    D --> E["RAG Retriever: rag_utils.py"]
+    E --> F["Project Knowledge Base"]
+    F --> G["README.md"]
+    F --> H["reflection.md"]
+    F --> I["app.py"]
+    F --> J["logic_utils.py"]
+    F --> K["tests/test_game_logic.py"]
+    G --> L["Retrieved Evidence Snippets"]
     H --> L
     I --> L
     J --> L
     K --> L
-    L --> M[Museum Guide Response Generator]
-    M --> N[Project-Specific Explanation in Streamlit]
-    N --> O[Human Reviews Explanation]
-    E --> P[Pytest Checks RAG Helpers]
-    K --> Q[Pytest Checks Game Logic]
+    L --> M["Museum Guide Response Generator"]
+    M --> N["Project-Specific Explanation in Streamlit"]
+    N --> O["Human Reviews Explanation"]
+    E --> P["Pytest Checks RAG Helpers"]
+    K --> Q["Pytest Checks Game Logic"]
 ```
 
 The human is involved by reviewing whether the generated explanation makes sense. Testing is involved through `pytest`, which checks both the original game logic and the new RAG helper functions.
