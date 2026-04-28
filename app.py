@@ -1,6 +1,7 @@
 import random
 import streamlit as st
 from logic_utils import check_guess, get_range_for_difficulty, parse_guess, update_score
+from rag_utils import ARTIFACT_QUERIES, answer_museum_question, get_artifact_query
 
 st.set_page_config(page_title="Glitchy Guesser", page_icon="🎮")
 
@@ -127,9 +128,8 @@ if st.session_state.status != "playing":
             f"Out of attempts! The secret was {st.session_state.secret}. "
             f"Score: {st.session_state.score}"
         )
-    st.stop()
 
-if submit:
+if submit and st.session_state.status == "playing":
     ok, guess_int, err = parse_guess(raw_guess, low, high)
 
     if not ok:
@@ -163,4 +163,44 @@ if submit:
         st.rerun()
 
 st.divider()
+st.subheader("Glitch Museum Mode")
+st.caption(
+    "Inspect the bugs that used to haunt this game. The museum guide searches "
+    "the project files before explaining each exhibit."
+)
+
+artifact_names = list(ARTIFACT_QUERIES.keys())
+selected_artifact = st.selectbox("Choose a bug artifact:", artifact_names)
+artifact_question = get_artifact_query(selected_artifact)
+
+custom_question = st.text_input(
+    "Ask the museum guide a question:",
+    value=artifact_question,
+    key="museum_question",
+)
+
+inspect_artifact, ask_custom = st.columns(2)
+with inspect_artifact:
+    inspect_clicked = st.button("Inspect Artifact")
+with ask_custom:
+    ask_clicked = st.button("Ask Custom Question")
+
+museum_query = None
+if inspect_clicked:
+    museum_query = artifact_question
+elif ask_clicked:
+    museum_query = custom_question
+
+if museum_query:
+    guide_answer, evidence, confidence, confidence_label = answer_museum_question(museum_query)
+    st.info(f"Confidence: {confidence_label} ({confidence:.2f})")
+    st.markdown(guide_answer)
+
+    if evidence:
+        with st.expander("Retrieved case-file evidence"):
+            for item in evidence:
+                st.write(f"Source: {item['source']}")
+                st.write(item["text"])
+                st.write("---")
+
 st.caption("Built by an AI that claims this code is production-ready.")

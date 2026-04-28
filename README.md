@@ -1,62 +1,145 @@
-# 🎮 Game Glitch Investigator: The Impossible Guesser
+# Game Glitch Investigator: Glitch Museum Mode
 
-## 🚨 The Situation
+## Original Project
 
-You asked an AI to build a simple "Number Guessing Game" using Streamlit.
-It wrote the code, ran away, and now the game is unplayable. 
+My original Modules 1-3 project was **Game Glitch Investigator: The Impossible Guesser**, a Streamlit number guessing game that was intentionally full of AI-generated bugs. The original goal was to debug the game, fix broken state management and game logic, refactor reusable functions into `logic_utils.py`, and prove the fixes with `pytest`. By the end of that project, the game could generate a stable secret number, validate guesses by difficulty, give correct higher/lower hints, reset properly, and score the player consistently.
 
-- You can't win.
-- The hints lie to you.
-- The secret number seems to have commitment issues.
+## Title and Summary
 
-## 🛠️ Setup
+**Glitch Museum Mode** turns the finished guessing game into an interactive debugging exhibit. Instead of only playing the fixed game, users can inspect old bug "artifacts" such as the shapeshifting secret number, backwards hints, broken reset button, invalid guesses, strange scoring, and the tests that caught those issues.
 
-1. Install dependencies: `pip install -r requirements.txt`
-2. Run the broken app: `python -m streamlit run app.py`
+This matters because it shows how AI-generated code should be reviewed: not just by asking whether it runs, but by checking whether it behaves correctly. The added RAG system helps explain the debugging process using real evidence from the project files, so the app becomes both a playable game and a learning tool.
 
-## 🕵️‍♂️ Your Mission
+## Architecture Overview
 
-1. **Play the game.** Open the "Developer Debug Info" tab in the app to see the secret number. Try to win.
-2. **Find the State Bug.** Why does the secret number change every time you click "Submit"? Ask ChatGPT: *"How do I keep a variable from resetting in Streamlit when I click a button?"*
-3. **Fix the Logic.** The hints ("Higher/Lower") are wrong. Fix them.
-4. **Refactor & Test.** - Move the logic into `logic_utils.py`.
-   - Run `pytest` in your terminal.
-   - Keep fixing until all tests pass!
+Glitch Museum Mode is integrated directly into the main Streamlit app. The user selects a museum artifact or asks a custom question, the app sends that query to the local RAG helper in `rag_utils.py`, and the retriever searches the project knowledge base for relevant evidence. The museum guide then creates a project-specific explanation using the retrieved snippets.
 
-## 📝 Document Your Experience
+```mermaid
+flowchart TD
+    A[Human Player / Student] --> B[Select Artifact or Ask Question]
+    B --> C[Streamlit App: app.py]
+    C --> D[Artifact Query / Question Processor]
+    D --> E[RAG Retriever: rag_utils.py]
+    E --> F[Project Knowledge Base]
+    F --> G[README.md]
+    F --> H[reflection.md]
+    F --> I[app.py]
+    F --> J[logic_utils.py]
+    F --> K[tests/test_game_logic.py]
+    G --> L[Retrieved Evidence Snippets]
+    H --> L
+    I --> L
+    J --> L
+    K --> L
+    L --> M[Museum Guide Response Generator]
+    M --> N[Project-Specific Explanation in Streamlit]
+    N --> O[Human Reviews Explanation]
+    E --> P[Pytest Checks RAG Helpers]
+    K --> Q[Pytest Checks Game Logic]
+```
 
-- [x] **Game Purpose:** The player tries to guess a secret number within a limited number of attempts. The difficulty setting controls the range of the number and how many attempts are allowed. Points are awarded based on how few guesses it takes to win.
+The human is involved by reviewing whether the generated explanation makes sense. Testing is involved through `pytest`, which checks both the original game logic and the new RAG helper functions.
 
-- [x] **Bugs Found:**
-  1. The hints were backwards — guessing too low told the player to go lower, and guessing too high told the player to go higher.
-  2. The New Game button did not reset status, score, or history — a finished game stayed locked and old scores carried over.
-  3. The secret number was generated using a hardcoded range of 1–100 regardless of difficulty, so Easy and Hard secrets could be completely outside their intended ranges.
-  4. Negative numbers and out-of-range guesses were accepted as valid inputs.
-  5. The sidebar showed a static attempt limit that never counted down during play.
-  6. Changing difficulty mid-game kept the old secret, which could be unguessable in the new range.
-  7. The `attempts % 2 == 0` glitch converted the secret to a string, causing alphabetical comparison bugs that flipped hints (e.g. `"4" > "22"` evaluated `True`).
-  8. The debug panel and history were always one guess behind because they rendered before the submit block executed.
-  9. The Submit Guess button remained clickable after the game was won or lost.
-  10. Clicking the Show Hint checkbox after winning re-triggered the balloons animation.
-  11. The score logic awarded bonus points for wrong guesses on even-numbered attempts, which made no sense.
+## Setup Instructions
 
-- [x] **Fixes Applied:**
-  1. Swapped the hint messages in `check_guess` so "Too Low" says "Go HIGHER!" and "Too High" says "Go LOWER!".
-  2. Added `status`, `score`, `history`, `last_hint`, and `balloons_shown` resets to the New Game block.
-  3. Updated all secret generation to use `get_range_for_difficulty(difficulty)` instead of hardcoded `1–100`.
-  4. Added range and negative number validation to `parse_guess`, which now accepts `low` and `high` parameters.
-  5. Updated the sidebar to compute remaining attempts dynamically from `session_state.attempts`.
-  6. Added a difficulty-change detection block that resets all game state when the player switches difficulty.
-  7. Removed the `attempts % 2 == 0` string conversion so `check_guess` always compares integers.
-  8. Stored hints in `session_state.last_hint` and called `st.rerun()` after every valid guess so the debug panel always shows fresh state.
-  9. Disabled the Submit Guess button using `disabled=` when `status != "playing"`.
-  10. Added a `balloons_shown` flag so the win animation only fires once per game.
-  11. Rewrote `update_score` to award `max(10, 100 - 10 * attempts)` for a win and deduct 5 points equally for any wrong guess.
+1. Clone or download the project.
+2. Open a terminal in the project folder.
+3. Install dependencies:
 
-## 📸 Demo
+```bash
+pip install -r requirements.txt
+```
 
-- ![alt text](image.png)
+4. Run the Streamlit app:
 
-## 🚀 Stretch Features
+```bash
+python -m streamlit run app.py
+```
 
-- [ ] [If you choose to complete Challenge 4, insert a screenshot of your Enhanced Game UI here]
+5. Open the local Streamlit URL shown in the terminal.
+6. Play the guessing game or scroll to **Glitch Museum Mode**.
+7. Select a bug artifact, click **Inspect Artifact**, or type your own question and click **Ask Custom Question**.
+
+To run the tests:
+
+```bash
+pytest
+```
+
+## Sample Interactions
+
+### Example 1: Shapeshifting Secret Number
+
+**Input:** Select `Shapeshifting Secret Number` and click **Inspect Artifact**.
+
+**Output:** The museum guide explains that Streamlit reruns the script after interactions, so the secret number needed to be stored in `st.session_state` instead of being regenerated every time. It retrieves evidence from files like `reflection.md` and `app.py`.
+
+### Example 2: Backwards Hint Machine
+
+**Input:** Ask: `Which test proves the hints were fixed?`
+
+**Output:** The guide explains that low guesses should tell the player to go higher and high guesses should tell the player to go lower. It cites evidence from `tests/test_game_logic.py`, including tests such as `test_hint_too_low_tells_player_to_go_higher` and `test_hint_too_high_tells_player_to_go_lower`.
+
+### Example 3: Suspicious Scorekeeper
+
+**Input:** Select `Suspicious Scorekeeper` and click **Inspect Artifact**.
+
+**Output:** The guide explains that the old scoring logic gave strange bonuses for wrong guesses, while the fixed `update_score` function now deducts points consistently for wrong guesses and awards win points based on the number of attempts used. It retrieves evidence from `logic_utils.py` and the score-related tests.
+
+## Design Decisions
+
+- I used a lightweight local RAG system instead of a paid AI API so the project is easy to run from GitHub without secrets or account setup.
+- I kept the retriever in `rag_utils.py` so the RAG logic is separate from the Streamlit UI and can be tested directly.
+- I used project files as the knowledge base because the assignment is about explaining this specific debugging process, not answering general programming questions.
+- I used keyword scoring and text chunks as a simple retrieval method. This is less powerful than embeddings, but it is transparent, fast, and enough for a small project.
+- I made the museum guide template-based instead of fully generative. The trade-off is that responses are less flexible, but they are reliable, evidence-based, and easier to test.
+- I kept the original guessing game playable while adding the museum as an educational layer below it.
+
+## Testing Summary
+
+The project uses `pytest` to check both the fixed game logic and the RAG helper logic.
+
+The game tests verify that:
+
+- Winning guesses are detected correctly.
+- Higher/lower hints point in the correct direction.
+- Negative and out-of-range guesses are rejected.
+- New games reset status, score, attempts, and history.
+- Difficulty changes reset the secret number into the new range.
+- Scoring rewards wins and consistently deducts points for wrong guesses.
+
+The RAG tests verify that:
+
+- Museum artifacts map to useful retrieval queries.
+- Relevant chunks are retrieved for matching questions.
+- Empty or unrelated questions return a graceful "not enough evidence" answer.
+- Generated museum answers include retrieved project evidence.
+- Confidence scores are based on retrieved evidence strength and never exceed `1.0`.
+
+The current reliability result is: **26 out of 26 automated tests passed**. The RAG guide now reports a confidence score from `0.00` to `1.00`; unrelated questions receive `0.00` confidence and the fallback response instead of an unsupported answer.
+
+One issue I ran into was making the RAG feature testable without launching the full Streamlit app. I solved that by separating retrieval and answer generation into `rag_utils.py`, then testing those functions directly.
+
+## Portfolio Artifact
+
+- **GitHub Repository:** `PASTE_GITHUB_REPO_LINK_HERE`
+- **Loom Video Walkthrough:** `PASTE_LOOM_VIDEO_LINK_HERE`
+- **Presentation Guide:** See `PRESENTATION.md` for the 5-7 minute walkthrough plan.
+
+This project shows that I am becoming an AI engineer who cares about more than getting a demo to run. I can take an AI-generated system, find where it fails, add tests, improve the user experience, and build a RAG feature that explains its answers with evidence. It also shows that I think about reliability and responsibility: the system includes confidence scoring, fallback behavior, and human-readable evidence instead of pretending every answer is equally trustworthy.
+
+## Responsible AI Reflection
+
+This system has important limitations. The RAG retriever uses keyword matching, so it can miss useful evidence if the user phrases a question in an unexpected way. It is also biased toward the files included in the knowledge base, which means it can only explain the bugs and fixes that are documented in this project. The confidence score measures retrieval strength, not absolute truth, so a high score means "I found strong matching evidence," not "this answer is guaranteed correct."
+
+The system could be misused if someone treated the museum guide as a general programming expert or copied its explanations without checking the evidence. To prevent that, the guide shows retrieved case-file snippets, gives low confidence when evidence is weak, and returns a "not enough evidence" message for unrelated questions. I would also keep the knowledge base limited to approved project files so it does not accidentally expose private information.
+
+What surprised me most while testing reliability was how useful failure cases were. The unrelated-question test proved that the AI should sometimes refuse to answer instead of stretching weak context into a confident explanation. Adding confidence scoring also showed me that reliability is not just about passing tests; it is about helping the user understand when the system has enough evidence and when it does not.
+
+I collaborated with AI throughout the project as a debugging and design partner. One helpful suggestion was to move the game logic into `logic_utils.py`, which made it much easier to test functions like `check_guess`, `parse_guess`, and `update_score` without launching Streamlit. One flawed suggestion was an early partial validation fix that rejected negative numbers but did not reject guesses outside the selected difficulty range; testing and manual review exposed that gap, and I had to add full range validation.
+
+## Reflection
+
+This project taught me that AI-generated code can look convincing while still having serious logic problems. The original game ran, but the hints were backwards, the secret number changed unexpectedly, invalid guesses were accepted, and the reset button did not fully reset the game.
+
+Adding Glitch Museum Mode helped me see RAG as more than just "search and print." The retrieved evidence actually changes the answer because the guide explains bugs using the project's real code, tests, and reflection notes. I also learned that testing is part of responsible AI development: a helpful AI system should not only produce answers, but also give users ways to check whether those answers are grounded and reliable.
