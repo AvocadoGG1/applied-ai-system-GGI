@@ -23,6 +23,7 @@ pip-wheel-metadata/
 
 # Test and coverage artifacts
 .pytest_cache/
+.playwright-mcp/
 .coverage
 .coverage.*
 htmlcov/

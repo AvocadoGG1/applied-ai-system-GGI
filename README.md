@@ -10,6 +10,8 @@ My original Modules 1-3 project was **Game Glitch Investigator: The Impossible G
 
 This matters because it shows how AI-generated code should be reviewed: not just by asking whether it runs, but by checking whether it behaves correctly. The added RAG system helps explain the debugging process using real evidence from the project files, so the app becomes both a playable game and a learning tool.
 
+![Glitch Museum Mode RAG demo](assets/glitch_museum_mode_rag_demo.png)
+
 ## Architecture Overview
 
 Glitch Museum Mode is integrated directly into the main Streamlit app. The user selects a museum artifact or asks a custom question, the app sends that query to the local RAG helper in `rag_utils.py`, and the retriever searches the project knowledge base for relevant evidence. The museum guide then creates a project-specific explanation using the retrieved snippets.
@@ -122,7 +124,7 @@ One issue I ran into was making the RAG feature testable without launching the f
 
 ## Portfolio Artifact
 
-- **GitHub Repository:** `PASTE_GITHUB_REPO_LINK_HERE`
+- **GitHub Repository:** [https://github.com/AvocadoGG1/applied-ai-system-GGI](https://github.com/AvocadoGG1/applied-ai-system-GGI)
 - **Loom Video Walkthrough:** `PASTE_LOOM_VIDEO_LINK_HERE`
 - **Presentation Guide:** See `PRESENTATION.md` for the 5-7 minute walkthrough plan.
 
