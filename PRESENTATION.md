@@ -1,221 +1,240 @@
-# 5-7 Minute Presentation Plan
+# Loom Walkthrough and Live Presentation Plan
 
-## Goal
+This file separates the **required Loom video** from the shorter **live peer presentation**.
 
-Show **Game Glitch Investigator: Glitch Museum Mode** running end-to-end, demonstrate the RAG feature, show reliability behavior, and explain what I learned.
+The Loom video is for graders and should prove every required feature. The live presentation can be shorter and focus on the most interesting parts.
 
-## Recording Flow
+Use these files for the live peer presentation:
 
-Use this screen order:
+- `presentation/glitch_museum_mode_peer_presentation.pptx`
+- `presentation/glitch_museum_mode_peer_speaker_notes.md`
 
-1. Streamlit app title/top of page
-2. Original number guessing game demo
-3. Glitch Museum Mode preset artifact
-4. Glitch Museum Mode custom test question
-5. Glitch Museum Mode unrelated question fallback
-6. README architecture diagram
-7. Terminal pytest result
-8. Reflection closing screen
+## Required Loom Checklist
 
-## Exact Presentation Script
+Your Loom must clearly demonstrate:
 
-### 0:00-0:45 - Project Intro
+- [ ] **End-to-end system run with 2-3 inputs**
+- [ ] **AI feature behavior**, specifically RAG retrieval and evidence-grounded answers
+- [ ] **Reliability, guardrail, or evaluation behavior**
+- [ ] **Clear outputs for each case**
+
+The video does **not** need to show code setup, file structure, or installation steps.
+
+## Loom Recording Setup
+
+Before recording:
+
+1. Open the Streamlit app: `http://localhost:8502`
+2. Open a terminal with the test result already visible:
+
+```powershell
+cd C:\Users\andre\PythonPrograms\applied-ai-system-final
+py -m pytest -vv
+```
+
+3. Keep `README.md` open near the architecture diagram if you want to briefly show it.
+4. Keep these three demo inputs ready:
+   - `Shapeshifting Secret Number`
+   - `Which test proves the hints were fixed?`
+   - `Explain database migrations and cloud billing`
+
+## Required Loom Script
+
+### 0:00-0:30 - Quick Intro
 
 Screen:
 
-- Show the top of the running Streamlit app.
-- Make sure the project title and main game area are visible.
-- Do not show code yet.
+- Show the Streamlit app.
+- Start near the top of the page.
 
-Speaker Notes:
+Say:
 
-"My project is called **Game Glitch Investigator: Glitch Museum Mode**. It started as a Streamlit number guessing game called **Game Glitch Investigator: The Impossible Guesser**. The original version had AI-generated bugs in the game logic, so my first job was to debug the game and make it actually reliable.
+"This project is **Game Glitch Investigator: Glitch Museum Mode**. It started as a broken AI-generated Streamlit guessing game. I fixed the game logic, added automated tests, and then added a RAG-powered museum guide that explains the old bugs using real evidence from the project files."
 
-After fixing the core game, I added an AI feature: a RAG-powered museum guide. The guide explains the old bugs using evidence from the project files instead of just making up a general answer. The final project combines a playable app, automated tests, retrieved evidence, and confidence scoring."
+Requirement covered:
 
-Transition:
+- Project context
+- End-to-end app is running
 
-"I will start by showing the fixed game, then I will show the RAG museum guide and the reliability guardrails."
-
-### 0:45-1:30 - Original Game Demo
+### 0:30-1:15 - End-to-End App Run
 
 Screen:
 
-- Stay in the Streamlit app.
-- Show the difficulty selector.
-- Show the guess input box.
-- Pick a difficulty.
-- Enter one valid guess.
-- Click the guess/submit button.
-- Show the feedback message.
-- If visible, briefly show the debug panel.
+- Show the guessing game.
+- Choose a difficulty if needed.
+- Enter one normal guess.
+- Click **Submit Guess**.
+- Show the output/hint or game feedback.
 
-Speaker Notes:
+Say:
 
-"This is the original number guessing game after the logic fixes. The player chooses a difficulty, enters a guess, and the app gives higher or lower feedback.
+"First, here is the base app running end-to-end. The user can choose a difficulty, enter a guess, and get game feedback. The original version had bugs like changing the secret number, backwards hints, invalid guesses, and broken reset behavior. Those have been fixed and tested."
 
-The important part is that the game now behaves consistently. The original version had bugs like changing the secret number during the game, giving backwards hints, accepting invalid guesses, and not resetting correctly. I fixed those issues and added tests so the game logic can be checked automatically."
+Requirement covered:
 
-Transition:
+- End-to-end system run
+- Clear output from the base app
 
-"Now I am going to scroll down to the AI part of the project, which is Glitch Museum Mode."
-
-### 1:30-2:15 - RAG Demo Input 1: Preset Artifact
+### 1:15-2:15 - Input 1: Preset RAG Artifact
 
 Screen:
 
 - Scroll to **Glitch Museum Mode**.
-- In the artifact dropdown, select `Shapeshifting Secret Number`.
+- Select `Shapeshifting Secret Number`.
 - Click **Inspect Artifact**.
-- Show the generated explanation.
-- Show the confidence score.
-- Show the retrieved case-file evidence.
+- Show the answer, confidence score, and retrieved evidence.
 
-Speaker Notes:
+Say:
 
-"This section demonstrates the RAG feature. I selected the artifact called **Shapeshifting Secret Number**, which represents one of the original bugs.
+"This is the AI feature behavior. I selected the artifact **Shapeshifting Secret Number**. The app turns that artifact into a retrieval query, searches project files like `reflection.md` and `app.py`, and then generates an explanation using the retrieved evidence."
 
-When I click inspect, the app turns that artifact into a retrieval query. It searches project files like `README.md`, `reflection.md`, `app.py`, and the test files. Then it generates an explanation using the retrieved evidence.
+"The output is clear: it explains that Streamlit reruns the script, so the secret number needed to live in session state. It also shows a confidence score and the exact evidence snippets used."
 
-The key thing to notice is that the answer is project-specific. It is not just a generic explanation of a programming bug. It is grounded in the files from this project, and the app shows the evidence it used."
+Requirement covered:
 
-Transition:
+- Input 1
+- RAG behavior
+- Evidence-grounded output
+- Confidence score
+- Clear output
 
-"Next I will ask a custom question instead of using a preset artifact."
-
-### 2:15-3:00 - RAG Demo Input 2: Custom Project Question
+### 2:15-3:15 - Input 2: Custom RAG Question
 
 Screen:
 
-- In the custom question box, type: `Which test proves the hints were fixed?`
+- In the custom question box, type:
+
+```text
+Which test proves the hints were fixed?
+```
+
 - Click **Ask Custom Question**.
-- Show the generated answer.
-- Point to evidence from `tests/test_game_logic.py`.
-- Show the confidence score.
+- Show the answer, confidence score, and evidence from `tests/test_game_logic.py`.
 
-Speaker Notes:
+Say:
 
-"This shows that the guide can answer custom questions, not only preset museum artifacts.
+"This is a custom question, so the system is not just responding to preset buttons. It retrieves evidence from the test file and explains which tests prove that low guesses tell the player to go higher and high guesses tell the player to go lower."
 
-Here I asked, **Which test proves the hints were fixed?** The system should retrieve evidence from the test file and explain which tests prove the higher and lower hint behavior works correctly.
+"This demonstrates that the RAG guide can connect the explanation to actual testing evidence."
 
-This is useful because the AI feature is connected to the actual engineering work. It can explain not just what changed, but how the project verifies that the change is correct."
+Requirement covered:
 
-Transition:
+- Input 2
+- Custom AI behavior
+- RAG retrieval from tests
+- Clear output
 
-"Now I will show what happens when the user asks something unrelated to the project."
-
-### 3:00-3:30 - RAG Demo Input 3: Unrelated Question Fallback
+### 3:15-4:00 - Input 3: Guardrail / Fallback
 
 Screen:
 
-- In the custom question box, type: `Explain database migrations and cloud billing`
+- In the custom question box, type:
+
+```text
+Explain database migrations and cloud billing
+```
+
 - Click **Ask Custom Question**.
-- Show the fallback response.
-- Show the low confidence result, especially `Not enough evidence (0.00)` if visible.
+- Show the fallback response and confidence score.
 
-Speaker Notes:
+Say:
 
-"This is the reliability guardrail. The question is about database migrations and cloud billing, which are not part of this project.
+"This is the guardrail behavior. The question is unrelated to the project. Instead of pretending it knows the answer, the system returns a not-enough-evidence response and gives `0.00` confidence."
 
-A weaker AI system might still try to answer confidently. This system should not do that. Because it cannot retrieve relevant project evidence, it returns a low confidence score and a not-enough-evidence fallback.
+"This matters because responsible AI should be honest when it does not have enough context."
 
-That behavior matters because responsible AI systems should be honest about their limits."
+Requirement covered:
 
-Transition:
+- Input 3
+- Reliability/guardrail behavior
+- Low-confidence fallback
+- Clear output
 
-"Next I will show the architecture behind what just happened."
-
-### 3:30-4:30 - Architecture
-
-Screen:
-
-- Switch to `README.md`.
-- Show the **Architecture Overview** section.
-- Show the Mermaid diagram rendered if possible.
-- If the diagram does not render, show the Mermaid code block.
-
-Speaker Notes:
-
-"This diagram shows the system architecture.
-
-The flow is simple and local. The human player or student uses the Streamlit app. The app sends the selected artifact or custom question into `rag_utils.py`. That file handles retrieval, answer generation, and confidence scoring.
-
-The knowledge base is made from project files such as `README.md`, `reflection.md`, `app.py`, `logic_utils.py`, and the test files. The retriever pulls the most relevant evidence snippets, and the museum guide uses those snippets to create a project-specific explanation in Streamlit.
-
-Testing is also part of the architecture. `pytest` checks both the original game logic and the RAG helper functions."
-
-Transition:
-
-"Now I will show the reliability side more directly with the automated tests."
-
-### 4:30-5:45 - Reliability and Testing
+### 4:00-4:45 - Reliability / Evaluation
 
 Screen:
 
-- Show a terminal with the pytest result if available.
-- Best screen: a terminal result showing `26 passed`.
-- If the terminal result is not available, show the README testing summary or the `tests` folder.
+- Show the terminal with the pytest result.
+- Make sure `26 passed` is visible.
 
-Speaker Notes:
+Say:
 
-"The system proves reliability in two main ways.
+"The system also has automated tests. The final result is **26 out of 26 tests passed**. The tests cover the game logic, retrieval behavior, fallback behavior, and confidence scoring."
 
-First, automated tests check the original game logic and the RAG helper functions. The final result is **26 out of 26 automated tests passed**. These tests cover things like valid guesses, invalid guesses, reset behavior, hint direction, retrieval behavior, and fallback behavior.
+"So the project is not only a working demo. It has checks that prove the main behaviors work."
 
-Second, the RAG feature includes confidence scoring. The confidence score is based on the strength and diversity of retrieved evidence. If the question is empty or unrelated to the project, the system does not pretend it has an answer. It uses a fallback response instead.
+Requirement covered:
 
-So reliability here is not just whether the app runs. It is whether the app behaves correctly, whether the AI answer is grounded in evidence, and whether the system refuses questions it cannot support."
+- Reliability/evaluation behavior
+- Automated tests
 
-Transition:
-
-"I will finish with what I learned from building and debugging this project."
-
-### 5:45-6:45 - Reflection
+### 4:45-5:30 - Architecture and Closing
 
 Screen:
 
-- Show `reflection.md`, or keep the app visible on the unrelated-question fallback response.
-- If using `reflection.md`, show a section that discusses debugging, testing, or responsible AI.
+- Show the README architecture diagram, or stay on the app output if time is short.
 
-Speaker Notes:
+Say:
 
-"This project taught me that AI-generated code can run and still be wrong. The original game looked like a working app, but the behavior was unreliable. That made testing and careful debugging necessary.
+"The architecture is simple: the user asks a question in Streamlit, `rag_utils.py` retrieves matching project evidence, and the museum guide generates an answer with confidence. Human review and pytest are both part of checking the system."
 
-The biggest lesson was that responsible AI needs evidence, tests, and guardrails. The RAG guide is useful because it explains the project using retrieved evidence. The confidence score is important because it helps show when the system has enough support for an answer and when it does not.
+"What I learned is that AI-generated code can run and still be wrong. Responsible AI needs evidence, tests, confidence scoring, and fallback behavior."
 
-I also learned how to work with AI as a teammate. It was helpful for refactoring and test ideas, but I still had to verify its suggestions. One early validation fix only rejected negative numbers and missed out-of-range guesses, so human review still mattered.
+Requirement covered:
 
-What this project says about me as an AI engineer is that I care about building AI systems that are useful, testable, and honest about their limits."
+- System explanation
+- Reflection
 
-Final line:
+## Loom Must-Show Summary
 
-"That is my demo of **Game Glitch Investigator: Glitch Museum Mode**."
+If you are nervous, make sure these exact moments appear in the video:
 
-## Loom Recording Checklist
+1. **Normal app run:** one guess submitted with visible feedback.
+2. **RAG preset input:** `Shapeshifting Secret Number` with answer, confidence, and evidence.
+3. **RAG custom input:** `Which test proves the hints were fixed?` with answer and test evidence.
+4. **Guardrail input:** `Explain database migrations and cloud billing` with fallback and `0.00` confidence.
+5. **Evaluation:** terminal showing `26 passed`.
 
-Before recording:
+## Short Live Peer Presentation
 
-- Run the Streamlit app.
-- Have the browser open to the app.
-- Have `README.md` ready at the architecture diagram.
-- Have a terminal ready with the latest pytest result, or be ready to run `pytest`.
-- Have `reflection.md` ready for the closing section.
+Tomorrow's peer presentation can be about 3 minutes plus questions. It does not need every required grading feature.
 
-During recording, clearly show:
+### 0:00-0:30 - Intro
 
-- End-to-end app behavior.
-- One normal game guess.
-- Preset artifact RAG response.
-- Custom project question RAG response.
-- Unrelated question fallback.
-- Confidence scores.
-- Retrieved evidence snippets.
-- Architecture diagram.
-- Passing tests.
+"My project is **Game Glitch Investigator: Glitch Museum Mode**. I turned a fixed AI-generated guessing game into a RAG museum that explains the old bugs using project evidence."
 
-You do not need to show:
+### 0:30-1:45 - Favorite Feature
 
-- Code installation.
-- File setup.
-- A full code walkthrough.
+Show `Shapeshifting Secret Number`.
+
+Say:
+
+"This is my favorite part because it turns a bug into an exhibit. The system retrieves evidence from the reflection and app code, then explains why the secret number used to change."
+
+Point out:
+
+- confidence score,
+- retrieved evidence,
+- project-specific explanation.
+
+### 1:45-2:30 - Most Responsible Feature
+
+Show the unrelated question:
+
+```text
+Explain database migrations and cloud billing
+```
+
+Say:
+
+"This is the responsible AI part. The app does not fake an answer when it lacks evidence. It gives low confidence and says it cannot find enough project context."
+
+### 2:30-3:00 - What I Learned
+
+Say:
+
+"The biggest thing I learned is that AI-generated code can look fine but still behave incorrectly. Testing, retrieval evidence, confidence scoring, and fallback behavior helped make the system more trustworthy."
+
+## Final Reminder
+
+For grading, prioritize the Loom. For peers, prioritize the interesting story.

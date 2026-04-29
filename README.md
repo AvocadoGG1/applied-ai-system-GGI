@@ -125,7 +125,7 @@ One issue I ran into was making the RAG feature testable without launching the f
 ## Portfolio Artifact
 
 - **GitHub Repository:** [https://github.com/AvocadoGG1/applied-ai-system-GGI](https://github.com/AvocadoGG1/applied-ai-system-GGI)
-- **Loom Video Walkthrough:** `PASTE_LOOM_VIDEO_LINK_HERE`
+- **Loom Video Walkthrough:** [https://www.loom.com/share/15018ed9091142f9984135a0b3d1cdb1](https://www.loom.com/share/15018ed9091142f9984135a0b3d1cdb1)
 - **Presentation Guide:** See `PRESENTATION.md` for the 5-7 minute walkthrough plan.
 
 This project shows that I am becoming an AI engineer who cares about more than getting a demo to run. I can take an AI-generated system, find where it fails, add tests, improve the user experience, and build a RAG feature that explains its answers with evidence. It also shows that I think about reliability and responsibility: the system includes confidence scoring, fallback behavior, and human-readable evidence instead of pretending every answer is equally trustworthy.

@@ -42,3 +42,7 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Local agent/tooling artifacts
+.agents/
+skills-lock.json
